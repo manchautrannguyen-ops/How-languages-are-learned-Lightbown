@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Gap-Fill Exercise — Chapter 1: Language Learning in Early Childhood</title>
+<style>
+  :root {
+    --bg: #f8f6f1; --surface: #ffffff;
+    --ink: #1f1f1f; --ink-soft: #555; --ink-muted: #7a7a7a;
+    --border: #e5e2d8; --border-strong: #d6d2c5;
+    --accent: #b85c2c; --accent-soft: #fbeee5;
+    --correct: #1f8a5b; --correct-soft: #e6f5ed;
+    --wrong: #c43d3d; --wrong-soft: #fbeaea;
+    --hint: #8a6d2c; --hint-soft: #fbf4dc;
+    --shadow: 0 1px 2px rgba(0,0,0,0.04), 0 4px 14px rgba(0,0,0,0.04);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--ink);
+    font-family: "Charter", "Iowan Old Style", "Source Serif Pro", Georgia, "Times New Roman", serif;
+    font-size: 17px; line-height: 1.65; }
+  .page { max-width: 880px; margin: 0 auto; padding: 40px 28px 80px; }
+  header.intro { margin-bottom: 28px; padding-bottom: 20px; border-bottom: 1px solid var(--border); }
+  header.intro p { margin: 6px 0; color: var(--ink-soft); font-size: 15px; }
+  .toolbar { position: sticky; top: 0; z-index: 20; background: rgba(248,246,241,0.92);
+    backdrop-filter: saturate(140%) blur(8px); -webkit-backdrop-filter: saturate(140%) blur(8px);
+    margin: 0 -28px 24px; padding: 12px 28px; border-bottom: 1px solid var(--border);
+    display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; }
+  .toolbar .actions { display: flex; flex-wrap: wrap; gap: 8px; }
+  .toolbar .progress { font-size: 14px; color: var(--ink-soft); display: flex; align-items: center; gap: 12px; }
+  .progress-bar { width: 140px; height: 6px; background: var(--border); border-radius: 999px; overflow: hidden; }
+  .progress-bar > span { display: block; height: 100%; width: 0%; background: var(--accent); transition: width .3s ease; }
+  button.btn { font: inherit; font-size: 14px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    padding: 7px 14px; border-radius: 8px; border: 1px solid var(--border-strong);
+    background: var(--surface); color: var(--ink); cursor: pointer; transition: all .15s ease; }
+  button.btn:hover { border-color: var(--accent); color: var(--accent); }
+  button.btn:active { transform: scale(0.98); }
+  button.btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  button.btn.primary:hover { background: #a04f24; border-color: #a04f24; color: #fff; }
+  button.btn.ghost { background: transparent; }
+
+  section.chapter { background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
+    padding: 26px 32px 30px; margin: 0 0 28px; box-shadow: var(--shadow); }
+  h1, h2, h3, h4 { font-weight: 600; line-height: 1.3; letter-spacing: -0.005em; }
+  h1.chap-num { font-size: 26px; color: var(--ink); margin: 0 0 16px; padding-bottom: 10px; border-bottom: 2px solid var(--accent); }
+  h3.section-h { font-size: 20px; margin: 28px 0 10px; color: var(--accent); }
+  h4.section-h { font-size: 17px; margin: 22px 0 8px; color: var(--ink); }
+  p { margin: 12px 0; text-wrap: pretty; }
+  strong { font-weight: 600; }
+  em { font-style: italic; }
+
+  .gap-wrap { display: inline-flex; align-items: baseline; gap: 4px; white-space: nowrap; margin: 0 1px; }
+  .gap-input { font: inherit;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-size: 0.95em; width: 13ch; padding: 2px 8px; border: none;
+    border-bottom: 2px solid var(--accent); background: var(--accent-soft); color: var(--ink);
+    border-radius: 4px 4px 0 0; outline: none; transition: all .15s ease; }
+  .gap-input:focus { background: #fff; border-bottom-color: var(--accent); box-shadow: 0 2px 0 var(--accent); }
+  .gap-input.correct { background: var(--correct-soft); border-bottom-color: var(--correct); color: var(--correct); font-weight: 500; }
+  .gap-input.wrong { background: var(--wrong-soft); border-bottom-color: var(--wrong); color: var(--wrong); font-weight: 500; }
+  .gap-input.revealed { background: var(--hint-soft); border-bottom-color: var(--hint); color: var(--hint); font-weight: 500; font-style: italic; }
+  .gap-num { font-size: 0.78em; color: var(--ink-muted); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; vertical-align: super; }
+  .gap-feedback { display: inline-flex; width: 16px; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 0.85em; font-weight: 600; }
+  .gap-feedback.ok::before { content: "\2713"; color: var(--correct); }
+  .gap-feedback.no::before { content: "\2717"; color: var(--wrong); }
+  .gap-feedback.show::before { content: "\2605"; color: var(--hint); }
+
+  .summary { display: none; margin: 14px 0 8px; padding: 12px 16px;
+    background: #f7f4ec; border: 1px solid var(--border); border-left: 4px solid var(--accent);
+    border-radius: 8px; font-size: 15px; }
+  .summary.show { display: block; }
+  .summary strong { color: var(--accent); }
+
+  @media print {
+    body { background: white; }
+    .toolbar { display: none; }
+    section.chapter { box-shadow: none; border: none; padding: 0; margin-bottom: 16px; page-break-inside: avoid; }
+    .gap-input { background: transparent; border-bottom: 1px solid #999; }
+  }
+  @media (max-width: 640px) {
+    .page { padding: 20px 16px 60px; }
+    section.chapter { padding: 20px 18px; }
+    .toolbar { margin: 0 -16px 16px; padding: 10px 16px; }
+    h1.chap-num { font-size: 22px; }
+    h3.section-h { font-size: 17px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <header class="intro">
+    <p><strong>Gap-Fill Exercise — Chapter 1 Summary</strong></p>
+    <p><em>Language Learning in Early Childhood</em></p>
+    <p><strong>Instructions:</strong> Each numbered gap targets a key word from the summary. Type the missing word in each input — press Enter or click out to check. Use the toolbar to check all answers, reveal them, or reset.</p>
+  </header>
+
+  <div class="toolbar" role="toolbar" aria-label="Exercise controls">
+    <div class="actions">
+      <button class="btn primary" id="btn-check-all" type="button">Check all answers</button>
+      <button class="btn" id="btn-reveal-all" type="button">Reveal all</button>
+      <button class="btn ghost" id="btn-reset-all" type="button">Reset</button>
+    </div>
+    <div class="progress" aria-live="polite">
+      <span id="score-text">0 / 33 correct</span>
+      <span class="progress-bar"><span id="score-bar"></span></span>
+    </div>
+  </div>
+
+  <div id="summary-top" class="summary" role="status" aria-live="polite"></div>
+
+  <section class="chapter">
+<h1 class="chap-num">CHAPTER 1: LANGUAGE LEARNING IN EARLY CHILDHOOD</h1>
+<h3 class="section-h">Preview</h3>
+<p>The chapter introduces the topic of language development in young children and the theories proposed to explain how language is learned. It draws on extensive research, mostly from middle-class North American and European families, but also from cross-linguistic and <span class="gap-wrap" data-gap="1" data-answer="cross"><input type="text" class="gap-input" data-gap="1" aria-label="Gap 1" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" /><span class="gap-num">(1)</span><span class="gap-feedback" aria-live="polite"></span></span>-cultural studies. The purpose is to highlight key findings as a foundation for the book&#x27;s main focus: second language acquisition (SLA).</p>
+<h3 class="section-h">First language acquisition</h3>
+<p>Language acquisition is one of the most <span class="gap-wrap" data-gap="2" data-answer="fascinating"><input type="text" class="gap-input" data-gap="2" aria-label="Gap 2" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" /><span class="gap-num">(2)</span><span class="gap-feedback" aria-live="polite"></span></span> aspects of human development. The section raises the central questions the chapter explores: How do children learn words and combine them into meaningful sentences? What drives them to keep developing complex grammar even when simple communication works? Does language develop similarly across the world? How do bilingual children acquire multiple languages?</p>
+<h4 class="section-h">The first three years: Milestones and developmental sequences</h4>
+<p>There is remarkable similarity in children&#x27;s early language development worldwide. Newborns can distinguish human speech sounds from other sounds, recognize their mother&#x27;s voice, and <span class="gap-wrap" data-gap="3" data-answer="detect"><input type="text" class="gap-input" data-gap="3" aria-label="Gap 3" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" /><span class="gap-num">(3)</span><span class="gap-feedback" aria-live="polite"></span></span> subtle phonetic distinctions (e.g., &quot;pa&quot; vs. &quot;ba&quot;), even sounds not used in their native language. By around 12 months, most children produce their first recognizable words; by age two, they produce many words and begin combining them into &quot;telegraphic&quot; sentences (e.g., &quot;Mommy juice,&quot; &quot;baby fall down&quot;) that follow proper word order and show creative combinations rather than mere <span class="gap-wrap" data-gap="4" data-answer="imitation"><input type="text" class="gap-input" data-gap="4" aria-label="Gap 4" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" /><span class="gap-num">(4)</span><span class="gap-feedback" aria-live="polite"></span></span>. The development follows predictable patterns called developmental sequences or &quot;stages.&quot;</p>
+<p>Three specific sequences are covered:</p>
+<p><strong>Grammatical morphemes:</strong> Roger Brown&#x27;s longitudinal study found that 14 grammatical morphemes (e.g., present progressive -ing, plural -s, possessive -s, articles, past tense, third person -s) are acquired in a similar order across children, though at different ages. The &quot;wug test&quot; by Jean Berko Gleason showed children can apply rules to <span class="gap-wrap" data-gap="5" data-answer="novel"><input type="text" class="gap-input" data-gap="5" aria-label="Gap 5" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" /><span class="gap-num">(5)</span><span class="gap-feedback" aria-live="polite"></span></span> words, proving they learn rules rather than just memorize forms.</p>
+<p><strong>Negation:</strong> Develops in four stages, from single &quot;no&quot; + word (&quot;No cookie&quot;) to inserting negatives before verbs, then attaching to <span class="gap-wrap" data-gap="6" data-answer="auxiliaries"><input type="text" class="gap-input" data-gap="6" aria-label="Gap 6" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" /><span class="gap-num">(6)</span><span class="gap-feedback" aria-live="polite"></span></span>, and finally using correct forms across persons and tenses.</p>
+<p><strong>Questions:</strong> Move through six stages, from single-word/chunk questions (&quot;Cookie?&quot;, &quot;Whassat?&quot;) through <span class="gap-wrap" data-gap="7" data-answer="declarative"><input type="text" class="gap-input" data-gap="7" aria-label="Gap 7" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" /><span class="gap-num">(7)</span><span class="gap-feedback" aria-live="polite"></span></span>-order with rising intonation, &quot;fronting&quot; (placing a question word at the front without inversion), partial subject-auxiliary inversion, full correct formation, and finally complex embedded questions.</p>
+<h4 class="section-h">The pre-school years</h4>
+<p>By age four, children can ask questions, give commands, report events, and create stories using correct word order most of the time. Three- and four-year-olds add several new words daily and acquire complex structures like passives and relative clauses. They learn to use language in widening social contexts—adjusting how they speak to babies versus adults—and begin developing <span class="gap-wrap" data-gap="8" data-answer="metalinguistic"><input type="text" class="gap-input" data-gap="8" aria-label="Gap 8" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" /><span class="gap-num">(8)</span><span class="gap-feedback" aria-live="polite"></span></span> awareness, the ability to treat language as an object separate from meaning (e.g., recognizing that &quot;drink the chair&quot; is &quot;silly&quot;). Children spend roughly 20,000+ hours in language-rich environments by the time they start school.</p>
+<h4 class="section-h">The school years</h4>
+<p>Vocabulary growth is the most impressive development—children enter school knowing several thousand words and add several hundred to over a thousand each year, largely through reading (especially varied text types including non-fiction). They learn different language registers (how spoken differs from written; how one speaks to a <span class="gap-wrap" data-gap="9" data-answer="principal"><input type="text" class="gap-input" data-gap="9" aria-label="Gap 9" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" /><span class="gap-num">(9)</span><span class="gap-feedback" aria-live="polite"></span></span> versus on the playground; narrative versus science writing). Children who speak <span class="gap-wrap" data-gap="10" data-answer="ethnic"><input type="text" class="gap-input" data-gap="10" aria-label="Gap 10" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" /><span class="gap-num">(10)</span><span class="gap-feedback" aria-live="polite"></span></span>, regional, or different language varieties must also learn the standard variety used in school. Metalinguistic awareness expands greatly through learning to read.</p>
+<h3 class="section-h">Explaining first language acquisition</h3>
+<p>While what children learn is well documented, how they learn it remains controversial. Three main theoretical perspectives have been <span class="gap-wrap" data-gap="11" data-answer="proposed"><input type="text" class="gap-input" data-gap="11" aria-label="Gap 11" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" /><span class="gap-num">(11)</span><span class="gap-feedback" aria-live="polite"></span></span> since the mid-20th century: behaviourist, innatist, and interactionist/developmental.</p>
+<h4 class="section-h">The behaviourist perspective</h4>
+<p>Most associated with B. F. Skinner (1957), this 1940s–50s theory holds that language is learned through <span class="gap-wrap" data-gap="12" data-answer="imitation"><input type="text" class="gap-input" data-gap="12" aria-label="Gap 12" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" /><span class="gap-num">(12)</span><span class="gap-feedback" aria-live="polite"></span></span>, practice, reinforcement, and habit formation. Children imitate what they hear; correct attempts get positive reinforcement (praise or successful communication), forming habits. The environment is the source of everything the child needs to learn. However, while imitation and practice explain some early vocabulary and routines, they cannot account for children&#x27;s creative, rule-governed productions (e.g., &quot;goed,&quot; &quot;feets&quot;) or for the complex grammar children acquire without being <span class="gap-wrap" data-gap="13" data-answer="explicitly"><input type="text" class="gap-input" data-gap="13" aria-label="Gap 13" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" /><span class="gap-num">(13)</span><span class="gap-feedback" aria-live="polite"></span></span> taught.</p>
+<h4 class="section-h">The innatist perspective</h4>
+<p>Noam Chomsky challenged behaviourism, arguing children are biologically programmed for language, which develops like other <span class="gap-wrap" data-gap="14" data-answer="biological"><input type="text" class="gap-input" data-gap="14" aria-label="Gap 14" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" /><span class="gap-num">(14)</span><span class="gap-feedback" aria-live="polite"></span></span> functions (e.g., walking). He pointed to the &quot;logical problem of language acquisition&quot;—children come to know more about language than they could learn from the limited and imperfect input they hear. He proposed children are born with Universal Grammar (UG): innate knowledge of principles common to all languages. The complexity of grammar (illustrated by <span class="gap-wrap" data-gap="15" data-answer="reflexive"><input type="text" class="gap-input" data-gap="15" aria-label="Gap 15" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" /><span class="gap-num">(15)</span><span class="gap-feedback" aria-live="polite"></span></span> pronouns like &quot;himself&quot;) and the fact that virtually all children—including deaf children exposed to sign language and children with limited <span class="gap-wrap" data-gap="16" data-answer="cognitive"><input type="text" class="gap-input" data-gap="16" aria-label="Gap 16" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" /><span class="gap-num">(16)</span><span class="gap-feedback" aria-live="polite"></span></span> ability—acquire complex language systems support this view.</p>
+<p>The innatist perspective is linked to the Critical Period Hypothesis (CPH), which proposes there is a biological window in early childhood during which language must be acquired. Cases of extreme <span class="gap-wrap" data-gap="17" data-answer="deprivation"><input type="text" class="gap-input" data-gap="17" aria-label="Gap 17" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" /><span class="gap-num">(17)</span><span class="gap-feedback" aria-live="polite"></span></span> (Victor, the &quot;wild boy of Aveyron&quot;; Genie, isolated until age 13) provide partial but inconclusive support. Stronger evidence comes from studies of deaf signers: Elissa Newport&#x27;s research showed Native, Early, and Late ASL learners differed in <span class="gap-wrap" data-gap="18" data-answer="mastery"><input type="text" class="gap-input" data-gap="18" aria-label="Gap 18" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" /><span class="gap-num">(18)</span><span class="gap-feedback" aria-live="polite"></span></span> of grammatical markers, supporting a critical period regardless of whether language is oral or gestural. Research on international adoptees and neurological studies suggests language acquisition begins at or even before birth.</p>
+<h4 class="section-h">Interactionist/developmental perspectives</h4>
+<p>This view emphasizes the interplay between children&#x27;s innate learning ability and their environment. Developmental psychologists argue innatists <span class="gap-wrap" data-gap="19" data-answer="overemphasize"><input type="text" class="gap-input" data-gap="19" aria-label="Gap 19" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" /><span class="gap-num">(19)</span><span class="gap-feedback" aria-live="polite"></span></span> the &quot;final state&quot; and underemphasize the developmental process. Language acquisition is seen as similar to other learning, not driven by a separate brain module.</p>
+<p>Key figures:</p>
+<p><strong>Jean Piaget:</strong> Language is one of several symbol systems built on <span class="gap-wrap" data-gap="20" data-answer="cognitive"><input type="text" class="gap-input" data-gap="20" aria-label="Gap 20" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" /><span class="gap-num">(20)</span><span class="gap-feedback" aria-live="polite"></span></span> development through interaction with the physical environment.</p>
+<p><strong>Lev Vygotsky:</strong> Language develops primarily through social interaction. He introduced the Zone of Proximal Development (ZPD)—children can perform at higher levels with supportive interaction (<span class="gap-wrap" data-gap="21" data-answer="scaffolding"><input type="text" class="gap-input" data-gap="21" aria-label="Gap 21" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" /><span class="gap-num">(21)</span><span class="gap-feedback" aria-live="polite"></span></span>). For Vygotsky, thought is <span class="gap-wrap" data-gap="22" data-answer="internalized"><input type="text" class="gap-input" data-gap="22" aria-label="Gap 22" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" /><span class="gap-num">(22)</span><span class="gap-feedback" aria-live="polite"></span></span> speech, and speech emerges in social interaction.</p>
+<p>The section also covers:</p>
+<p><strong>Cross-cultural research:</strong> Child-<span class="gap-wrap" data-gap="23" data-answer="directed"><input type="text" class="gap-input" data-gap="23" aria-label="Gap 23" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" /><span class="gap-num">(23)</span><span class="gap-feedback" aria-live="polite"></span></span> speech (slower, higher pitch, simpler sentences, repetition) is common in middle-class Western homes but not universal. Kaluli mothers (Papua New Guinea), traditional Inuit communities, and various cultures interact differently with children, yet children still successfully acquire their community&#x27;s language.</p>
+<p><strong>Importance of interaction:</strong> The case of &quot;Jim,&quot; a hearing child of deaf parents who learned language mainly via TV, showed <span class="gap-wrap" data-gap="24" data-answer="impersonal"><input type="text" class="gap-input" data-gap="24" aria-label="Gap 24" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" /><span class="gap-num">(24)</span><span class="gap-feedback" aria-live="polite"></span></span> input was insufficient—he developed normally only after one-to-one interaction with adults.</p>
+<p><strong>Usage-based learning:</strong> A cognitive view that language acquisition results from children&#x27;s general learning abilities applied to thousands of opportunities to make <span class="gap-wrap" data-gap="25" data-answer="connections"><input type="text" class="gap-input" data-gap="25" aria-label="Gap 25" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" /><span class="gap-num">(25)</span><span class="gap-feedback" aria-live="polite"></span></span> between language and experience, related to connectionism.</p>
+<h3 class="section-h">Language disorders and delays</h3>
+<p>Most children develop language without difficulty, but some have <span class="gap-wrap" data-gap="26" data-answer="disabilities"><input type="text" class="gap-input" data-gap="26" aria-label="Gap 26" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" /><span class="gap-num">(26)</span><span class="gap-feedback" aria-live="polite"></span></span> (deafness, articulation issues, autism, dyslexia) that affect language development. The &quot;normal&quot; range is wide. Parents and teachers should seek professional advice when concerned, but should be careful not to confuse normal individual differences—or limited knowledge of the school&#x27;s language—with disorders. Bilingual children with limited <span class="gap-wrap" data-gap="27" data-answer="proficiency"><input type="text" class="gap-input" data-gap="27" aria-label="Gap 27" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" /><span class="gap-num">(27)</span><span class="gap-feedback" aria-live="polite"></span></span> in the school language are sometimes misidentified as having delays.</p>
+<h3 class="section-h">Childhood bilingualism</h3>
+<p>Bilingualism is the norm globally, not the exception. Children who learn two languages from <span class="gap-wrap" data-gap="28" data-answer="infancy"><input type="text" class="gap-input" data-gap="28" aria-label="Gap 28" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" /><span class="gap-num">(28)</span><span class="gap-feedback" aria-live="polite"></span></span> are simultaneous bilinguals; those who add a language later are sequential bilinguals. Contrary to popular myth, learning two languages does not confuse children or significantly slow development. Bilingualism can enhance metalinguistic awareness and cognitive flexibility (Bialystok). Code-<span class="gap-wrap" data-gap="29" data-answer="switching"><input type="text" class="gap-input" data-gap="29" aria-label="Gap 29" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" /><span class="gap-num">(29)</span><span class="gap-feedback" aria-live="polite"></span></span> (using words from multiple languages in one conversation) is a normal, patterned, often <span class="gap-wrap" data-gap="30" data-answer="intentional"><input type="text" class="gap-input" data-gap="30" aria-label="Gap 30" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" /><span class="gap-num">(30)</span><span class="gap-feedback" aria-live="polite"></span></span> feature of bilingual speech—not a sign of deficiency.</p>
+<p>A key distinction:</p>
+<p><strong>Additive bilingualism:</strong> Adding a second language while maintaining the first—the recommended approach.</p>
+<p><strong>Subtractive bilingualism:</strong> Losing the first language as the second is acquired—often harmful, leading to weaker proficiency in both languages, academic struggles, and <span class="gap-wrap" data-gap="31" data-answer="disrupted"><input type="text" class="gap-input" data-gap="31" aria-label="Gap 31" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" /><span class="gap-num">(31)</span><span class="gap-feedback" aria-live="polite"></span></span> family relationships.</p>
+<p>Jim Cummins distinguished BICS (Basic Interpersonal Communication Skills—everyday conversational language) from CALP (Cognitive Academic Language Proficiency—the more difficult, <span class="gap-wrap" data-gap="32" data-answer="decontextualized"><input type="text" class="gap-input" data-gap="32" aria-label="Gap 32" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" /><span class="gap-num">(32)</span><span class="gap-feedback" aria-live="polite"></span></span> language needed for school success). Maintaining the home language while learning the school language is strongly supported by research.</p>
+<h3 class="section-h">Summary</h3>
+<p>The chapter has surveyed research on children&#x27;s early language development that has influenced second language acquisition research, and has described three broad theoretical <span class="gap-wrap" data-gap="33" data-answer="perspectives"><input type="text" class="gap-input" data-gap="33" aria-label="Gap 33" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" /><span class="gap-num">(33)</span><span class="gap-feedback" aria-live="polite"></span></span> (behaviourist, innatist, and interactionist/developmental) for explaining first language acquisition. Chapter 2 will turn to research on the developing language of second language learners.</p>
+  </section>
+</div>
+<script>
+(function(){
+  function normalize(str) {
+    if (!str) return '';
+    return str.toLowerCase().trim()
+      .replace(/[\u2018\u2019]/g, "'")
+      .replace(/[\u201C\u201D]/g, '"')
+      .replace(/\s+/g, ' ');
+  }
+  function checkInput(input) {
+    const wrap = input.parentElement;
+    const fb = wrap.querySelector('.gap-feedback');
+    const answer = wrap.getAttribute('data-answer') || '';
+    const value = input.value;
+    if (!value.trim()) {
+      input.classList.remove('correct', 'wrong', 'revealed');
+      fb.classList.remove('ok', 'no', 'show');
+      return null;
+    }
+    const ok = normalize(value) === normalize(answer);
+    input.classList.toggle('correct', ok);
+    input.classList.toggle('wrong', !ok);
+    input.classList.remove('revealed');
+    fb.classList.toggle('ok', ok);
+    fb.classList.toggle('no', !ok);
+    fb.classList.remove('show');
+    return ok;
+  }
+  function revealInput(input) {
+    const wrap = input.parentElement;
+    const fb = wrap.querySelector('.gap-feedback');
+    const answer = wrap.getAttribute('data-answer') || '';
+    input.value = answer;
+    input.classList.remove('correct', 'wrong');
+    input.classList.add('revealed');
+    fb.classList.remove('ok', 'no');
+    fb.classList.add('show');
+  }
+  function resetInput(input) {
+    const wrap = input.parentElement;
+    const fb = wrap.querySelector('.gap-feedback');
+    input.value = '';
+    input.classList.remove('correct', 'wrong', 'revealed');
+    fb.classList.remove('ok', 'no', 'show');
+  }
+  function updateGlobalStats() {
+    const inputs = document.querySelectorAll('.gap-input');
+    let correct = 0;
+    inputs.forEach(inp => { if (inp.classList.contains('correct')) correct++; });
+    const total = inputs.length;
+    document.getElementById('score-text').textContent = correct + ' / ' + total + ' correct';
+    document.getElementById('score-bar').style.width = (total ? (correct / total * 100) : 0) + '%';
+  }
+  document.addEventListener('input', (e) => {
+    if (e.target.classList.contains('gap-input')) {
+      const fb = e.target.parentElement.querySelector('.gap-feedback');
+      e.target.classList.remove('correct', 'wrong', 'revealed');
+      fb.classList.remove('ok', 'no', 'show');
+      updateGlobalStats();
+    }
+  });
+  document.addEventListener('blur', (e) => {
+    if (e.target.classList.contains('gap-input') && e.target.value.trim()) {
+      checkInput(e.target);
+      updateGlobalStats();
+    }
+  }, true);
+  document.addEventListener('keydown', (e) => {
+    if (e.target.classList.contains('gap-input') && e.key === 'Enter') {
+      e.preventDefault();
+      checkInput(e.target);
+      updateGlobalStats();
+      const inputs = [...document.querySelectorAll('.gap-input')];
+      const idx = inputs.indexOf(e.target);
+      if (idx >= 0 && idx + 1 < inputs.length) inputs[idx + 1].focus();
+    }
+  });
+  document.getElementById('btn-check-all').addEventListener('click', () => {
+    document.querySelectorAll('.gap-input').forEach(inp => { if (inp.value.trim()) checkInput(inp); });
+    updateGlobalStats();
+    const summary = document.getElementById('summary-top');
+    const total = document.querySelectorAll('.gap-input').length;
+    const correct = document.querySelectorAll('.gap-input.correct').length;
+    summary.innerHTML = '<strong>' + correct + ' / ' + total + ' correct.</strong> Review any incorrect answers and try again.';
+    summary.classList.add('show');
+  });
+  document.getElementById('btn-reveal-all').addEventListener('click', () => {
+    document.querySelectorAll('.gap-input').forEach(revealInput);
+    updateGlobalStats();
+  });
+  document.getElementById('btn-reset-all').addEventListener('click', () => {
+    document.querySelectorAll('.gap-input').forEach(resetInput);
+    document.getElementById('summary-top').classList.remove('show');
+    updateGlobalStats();
+  });
+  updateGlobalStats();
+})();
+</script>
+</body>
+</html>
